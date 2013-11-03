@@ -62,6 +62,7 @@ textarea {
 
 body {
     background-color: #202020;
+    background-image: url('http://tim.freunds.net/media/images/subtlepatterns/low_contrast_linen/low_contrast_linen.png');
     color: #ccc;
 }
 
@@ -81,6 +82,7 @@ a {
 }
 
 svg {
+    margin: 0;
     margin-top: .5em;
 }
 

@@ -5,8 +5,8 @@ var habitData = null;
 var key = function(d) { return d.key; };
 var now = new Date();
 
-var height = $(window).height() - 245;
-var width = $(window).width();
+var height = $(window).height() - 300;
+var width = $(window).width() - 50;
 var xScale = d3.scale.ordinal();
 var yScale = d3.scale.linear();
 
@@ -23,7 +23,6 @@ function calculateDatumHeight(diagramHeight, dailys){
     if(datumCount > dateConstrainedCount){
         datumCount = dateConstrainedCount;
     }
-    console.log("datumHeight " + (diagramHeight / datumCount));
     return (diagramHeight / datumCount) - 2;
 }
 
@@ -50,7 +49,7 @@ function fetchHabitData(userid, apikey){
         url: url,
         type: 'GET',
         dataType: 'json',
-        success: function(incoming) { console.log(incoming); habitData = incoming; transformData(); },
+        success: function(incoming) { habitData = incoming; transformData(); },
         error: fetchHabitDataHandleError,
         beforeSend: setHeader
     });
