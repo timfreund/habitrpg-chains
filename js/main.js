@@ -24,7 +24,7 @@ function calculateDatumHeight(diagramHeight, dailys){
         datumCount = dateConstrainedCount;
     }
     console.log("datumHeight " + (diagramHeight / datumCount));
-    return (diagramHeight / datumCount) - 3;
+    return (diagramHeight / datumCount) - 2;
 }
 
 function fetchAndRender(){
@@ -98,17 +98,35 @@ function transformData(){
 }
 
 function renderHabitData(){
-    var svg = d3.select("body")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+    var svg = d3.select("svg");
+    if(svg[0][0] == null){
+        svg = d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+    }
+
+    var datumHeight = calculateDatumHeight(height, habitData.dailys);
 
     var dots = svg.selectAll("rect")
-      .data(actions, key)
-      .enter()
+      .data(actions, key);
+
+    dots.exit()
+        .attr({'height': 0,
+               'width': 0})
+        .remove();
+
+    dots.transition()
+        .duration(500)
+        .attr({
+            'height': datumHeight,
+            'y': function(d){ return yScale(d.day)},
+        });
+
+    dots.enter()
       .append("rect")
       .attr({'width': xScale.rangeBand(),
-             'height': calculateDatumHeight(height, habitData.dailys),
+             'height': datumHeight,
              'fill': function(d){ 
                  if(d.state == 1){ 
                      return "rgb(25, 128, 25)"; 
@@ -122,7 +140,6 @@ function renderHabitData(){
              'x': function(d){ return xScale(d.text); },
              'y': function(d){ return yScale(d.day);},
             });
-
 }
 
 function updateDomain(){
