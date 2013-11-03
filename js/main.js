@@ -73,7 +73,7 @@ function transformData(){
             if (timestamp > earliestDate){
                 datum.text = daily.text;
                 datum.day = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate());
-                datum.key = datum.text + datum.day.toUTCString();
+                datum.key = datum.text + " " + datum.day.toDateString();
                 if(lastValue < datum.value){
                     datum.state = 1;
                 } else {
@@ -124,6 +124,23 @@ function renderHabitData(){
 
     dots.enter()
       .append("rect")
+      .on("mouseover", function(d) {
+          var xPos = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
+          var yPos = parseFloat(d3.select(this).attr("y")) + 14;
+          svg.append("text")
+              .attr({"id": "tooltip",
+                     "x": xPos,
+                     "y": yPos,
+                     "text-anchor": "middle",
+                     "font-family": "sans-serif",
+                     "font-size": "18px",
+                     "font-weight": "bold",
+                     "stroke": "white",
+                     "stroke-width": .5,
+                     "fill": "black"})
+              .text(d.key);
+      })
+      .on("mouseout", function(d){ d3.select("#tooltip").remove();})
       .attr({'width': xScale.rangeBand(),
              'height': datumHeight,
              'fill': function(d){ 
