@@ -60,14 +60,29 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+body {
+    background-color: #202020;
+    color: #ccc;
+}
 
+dt {
+    float: left;
+    clear: left;
+    width: 10em;
+    text-align: right;
+}
 
+dd {
+    margin-left: 11em;
+}
 
+a {
+    color: #88e;
+}
 
-
-
-
-
+svg {
+    margin-top: .5em;
+}
 
 
 

@@ -1,13 +1,14 @@
 var actions = null;
 var days = ['su', 'm', 't', 'w', 'th', 'f', 's'];
+var earliestDate = new Date(1970, 0, 1);
 var habitData = null;
 var key = function(d) { return d.key; };
 var now = new Date();
 
 var height = $(window).height() - 245;
 var width = $(window).width();
-var xScale = null;
-var yScale = null;
+var xScale = d3.scale.ordinal();
+var yScale = d3.scale.linear();
 
 
 function calculateDatumHeight(diagramHeight, dailys){
@@ -17,6 +18,11 @@ function calculateDatumHeight(diagramHeight, dailys){
             datumCount = dailys[i].history.length;
         }
     }
+
+    var dateConstrainedCount = Math.floor((now - earliestDate) / 1000 / (60*60*24))
+    if(datumCount > dateConstrainedCount){
+        datumCount = dateConstrainedCount;
+    }
     console.log("datumHeight " + (diagramHeight / datumCount));
     return (diagramHeight / datumCount) - 3;
 }
@@ -24,6 +30,7 @@ function calculateDatumHeight(diagramHeight, dailys){
 function fetchAndRender(){
     var userid = $('#userid')[0].value;
     var apikey = $('#apikey')[0].value;
+    
 
     fetchHabitData(userid, apikey);
 }
@@ -43,7 +50,7 @@ function fetchHabitData(userid, apikey){
         url: url,
         type: 'GET',
         dataType: 'json',
-        success: function(incoming) { console.log(incoming); habitData = incoming; renderHabitData(); },
+        success: function(incoming) { console.log(incoming); habitData = incoming; transformData(); },
         error: fetchHabitDataHandleError,
         beforeSend: setHeader
     });
@@ -53,7 +60,7 @@ function fetchHabitDataHandleError(){
     alert("boo");
 }
 
-function renderHabitData(){
+function transformData(){
     actions = [];
     var titles = [];
     for(var i = 0; i < habitData.dailys.length; i++){
@@ -64,27 +71,33 @@ function renderHabitData(){
             var datum = daily.history[j];
             // the data as recorded is actually from the day prior
             var timestamp = new Date(datum.date - (86400*1000));
-            datum.text = daily.text;
-            datum.day = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate());
-            datum.key = datum.text + datum.day.toUTCString();
-            if(lastValue < datum.value){
-                datum.state = 1;
-            } else {
-                if(daily.repeat[days[datum.day.getDay()]]){
-                    datum.state = -1;
+            if (timestamp > earliestDate){
+                datum.text = daily.text;
+                datum.day = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate());
+                datum.key = datum.text + datum.day.toUTCString();
+                if(lastValue < datum.value){
+                    datum.state = 1;
                 } else {
-                    datum.state = 0;
+                    if(daily.repeat[days[datum.day.getDay()]]){
+                        datum.state = -1;
+                    } else {
+                        datum.state = 0;
+                    }
                 }
+                lastValue = datum.value;
+                actions.push(datum);
             }
-            lastValue = datum.value;
-            actions.push(datum);
         }
     }
 
-    xScale = d3.scale.ordinal().domain(titles).rangeBands([0, width], 0.05);
-    yScale = d3.scale.linear().domain([d3.min(actions, function(d){ return d.day;}), 
-                                       d3.max(actions, function(d){ return d.day;})]).range([height, 0]);
+    xScale.domain(titles).rangeBands([0, width], 0.05);
+    yScale.domain([d3.min(actions, function(d){ return d.day;}), 
+                   d3.max(actions, function(d){ return d.day;})]).range([height, 0]);
     
+    renderHabitData();
+}
+
+function renderHabitData(){
     var svg = d3.select("body")
       .append("svg")
       .attr("width", width)
@@ -110,4 +123,15 @@ function renderHabitData(){
              'y': function(d){ return yScale(d.day);},
             });
 
+}
+
+function updateDomain(){
+    var ed = $("#earliestdate")[0].valueAsDate;
+    if(ed != null){
+        earliestDate = ed;
+    } else {
+        earliestDate = new Date(1970, 0, 1);
+    }
+
+    transformData();
 }
