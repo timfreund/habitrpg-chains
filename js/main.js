@@ -126,7 +126,7 @@ function renderHabitData(){
       .append("rect")
       .on("mouseover", function(d) {
           var xPos = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
-          var yPos = parseFloat(d3.select(this).attr("y")) + 14;
+          var yPos = parseFloat(d3.select(this).attr("y")) + 34;
           svg.append("text")
               .attr({"id": "tooltip",
                      "x": xPos,
