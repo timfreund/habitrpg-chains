@@ -17,11 +17,17 @@
     </head>
     <body>
 
-        <p>Hello world! This is HTML5 Boilerplate.</p>
+        <h1>HabitRPG Chains</h1>
+        <p>This page fetches your HabitRPG daily habit progress and
+        displays your streaks of success (or shame).</p>
+        <form>
+          <label for="userid">User ID: </label><input id="userid" value="demo"/><br/>
+          <label for="apikey">API Key: </label><input id="apikey" value="demo"/><br/>
+          <input type="button" value="Display Chains" onclick="fetchAndRender();"/>
+        </form>
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-
+        <script src="js/vendor/d3.v3.min.js"></script>
+        <script src="js/vendor/jquery-1.10.1.min.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
     </body>
