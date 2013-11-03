@@ -4,7 +4,7 @@ var habitData = null;
 var key = function(d) { return d.key; };
 var now = new Date();
 
-var height = $(window).height() - 225;
+var height = $(window).height() - 245;
 var width = $(window).width();
 var xScale = null;
 var yScale = null;
